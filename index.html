@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strip Reader</title>
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>Strip Reader</h1>
+  <button id="btn-history-nav" class="link-btn">History</button>
+</header>
+
+<main id="app">
+
+  <section id="screen-patient" class="screen active">
+    <h2>New Reading</h2>
+    <label for="input-patient-id">Patient ID</label>
+    <input id="input-patient-id" type="text" inputmode="text" placeholder="e.g. 10" autocomplete="off">
+    <button id="btn-start-capture" class="primary" disabled>Start Capture</button>
+  </section>
+
+  <section id="screen-camera" class="screen">
+    <div class="camera-wrap" id="camera-wrap">
+      <video id="video" playsinline muted autoplay></video>
+      <div class="guide-box" id="guide-box"></div>
+    </div>
+    <p class="hint">Align the strip's result window inside the box. Hold ~10cm away, steady, flash on.</p>
+    <p id="camera-error" class="error" hidden></p>
+    <div class="controls-row">
+      <button id="btn-torch" class="secondary" hidden>Flash: Off</button>
+      <button id="btn-capture" class="primary">Capture</button>
+      <button id="btn-cancel-camera" class="secondary">Cancel</button>
+    </div>
+  </section>
+
+  <section id="screen-roi" class="screen">
+    <h2>Select Result Window</h2>
+    <p class="hint">Drag a tight box around the control &amp; test lines. Your last selection is reused as a starting point.</p>
+    <div class="roi-wrap" id="roi-wrap">
+      <canvas id="roi-canvas"></canvas>
+      <div id="roi-selection" class="roi-selection" hidden></div>
+    </div>
+    <div class="controls-row">
+      <button id="btn-retake" class="secondary">Retake Photo</button>
+      <button id="btn-analyze" class="primary">Analyze</button>
+    </div>
+  </section>
+
+  <section id="screen-result" class="screen">
+    <h2>Result</h2>
+    <div class="result-grid">
+      <img id="result-roi-img" alt="Result window crop">
+      <canvas id="profile-chart" width="300" height="140"></canvas>
+    </div>
+    <div class="line-toggle">
+      <label><input type="radio" name="control-pos" value="top" checked> Top line = Control</label>
+      <label><input type="radio" name="control-pos" value="bottom"> Bottom line = Control</label>
+    </div>
+    <table class="result-table">
+      <tr><td>Control line intensity</td><td id="val-control">–</td></tr>
+      <tr><td>Test line intensity</td><td id="val-test">–</td></tr>
+      <tr><td>T/C ratio</td><td id="val-ratio">–</td></tr>
+    </table>
+    <div class="controls-row">
+      <button id="btn-discard" class="secondary">Discard</button>
+      <button id="btn-save" class="primary">Save Reading</button>
+    </div>
+  </section>
+
+  <section id="screen-history" class="screen">
+    <h2>History</h2>
+    <div class="controls-row">
+      <input id="filter-patient-id" placeholder="Filter by Patient ID">
+      <button id="btn-export-csv" class="secondary">Export CSV</button>
+      <button id="btn-export-json" class="secondary">Export JSON</button>
+    </div>
+    <div id="history-list"></div>
+    <button id="btn-back-home" class="secondary">+ New Reading</button>
+  </section>
+
+</main>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
