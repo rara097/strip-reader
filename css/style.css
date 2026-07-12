@@ -195,11 +195,21 @@ button.secondary { background: var(--panel); color: var(--text); border: 1px sol
 .history-item .meta .pid { font-weight: 600; font-size: 14px; }
 .history-item .meta .muted { color: var(--muted); }
 
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
 .history-item button {
   background: none;
   border: none;
   color: var(--danger);
   font-size: 13px;
+  padding: 2px;
 }
+
+.history-item button.photo-btn { color: var(--accent); }
 
 .empty-state { color: var(--muted); font-size: 14px; text-align: center; padding: 24px 0; }

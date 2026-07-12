@@ -1,6 +1,7 @@
 import { addReading, getAllReadings, deleteReading } from "./db.js";
 import { startCamera, stopCamera, getTrack, torchSupported, setTorch, captureFrame, guideBoxToVideoRect } from "./camera.js";
 import { cropCanvas, computeReading, drawProfileChart } from "./analysis.js";
+import { buildZip } from "./zip.js";
 
 const ROI_TEMPLATE_KEY = "strip-reader.roiTemplate";
 
@@ -34,6 +35,7 @@ const els = {
   filterPatientId: document.getElementById("filter-patient-id"),
   exportCsvBtn: document.getElementById("btn-export-csv"),
   exportJsonBtn: document.getElementById("btn-export-json"),
+  exportPhotosBtn: document.getElementById("btn-export-photos"),
   historyList: document.getElementById("history-list"),
   backHomeBtn: document.getElementById("btn-back-home"),
 };
@@ -263,6 +265,28 @@ els.saveBtn.addEventListener("click", async () => {
 els.filterPatientId.addEventListener("input", () => renderHistory());
 els.exportCsvBtn.addEventListener("click", exportCsv);
 els.exportJsonBtn.addEventListener("click", exportJson);
+els.exportPhotosBtn.addEventListener("click", exportPhotosZip);
+
+function photoFileName(r) {
+  const stamp = new Date(r.timestamp).toISOString().replace(/[:.]/g, "-");
+  const pid = r.patientId.replace(/[^a-z0-9_-]/gi, "_");
+  return `patient-${pid}_${stamp}.jpg`;
+}
+
+async function exportPhotosZip() {
+  const all = await getAllReadings();
+  if (!all.length) return;
+  els.exportPhotosBtn.disabled = true;
+  els.exportPhotosBtn.textContent = "Zipping…";
+  try {
+    const files = all.map((r) => ({ name: photoFileName(r), blob: r.fullImage, date: new Date(r.timestamp) }));
+    const zip = await buildZip(files);
+    downloadBlob(zip, "strip-photos.zip");
+  } finally {
+    els.exportPhotosBtn.disabled = false;
+    els.exportPhotosBtn.textContent = "Download All Photos";
+  }
+}
 
 async function renderHistory() {
   const filter = els.filterPatientId.value.trim().toLowerCase();
@@ -291,6 +315,14 @@ async function renderHistory() {
       <div>T ${fmt(r.testArea)} / C ${fmt(r.controlArea)} — ratio ${r.ratio != null ? r.ratio.toFixed(3) : "–"}</div>
     `;
 
+    const actions = document.createElement("div");
+    actions.className = "item-actions";
+
+    const photoBtn = document.createElement("button");
+    photoBtn.textContent = "Photo";
+    photoBtn.className = "photo-btn";
+    photoBtn.addEventListener("click", () => downloadBlob(r.fullImage, photoFileName(r)));
+
     const delBtn = document.createElement("button");
     delBtn.textContent = "Delete";
     delBtn.addEventListener("click", async () => {
@@ -298,7 +330,8 @@ async function renderHistory() {
       renderHistory();
     });
 
-    item.append(img, meta, delBtn);
+    actions.append(photoBtn, delBtn);
+    item.append(img, meta, actions);
     els.historyList.appendChild(item);
   }
 }

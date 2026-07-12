@@ -1,4 +1,4 @@
-const CACHE = "strip-reader-v1";
+const CACHE = "strip-reader-v2";
 const SHELL = [
   "./",
   "index.html",
@@ -7,6 +7,7 @@ const SHELL = [
   "js/db.js",
   "js/camera.js",
   "js/analysis.js",
+  "js/zip.js",
   "manifest.json",
   "icons/icon.svg",
 ];
