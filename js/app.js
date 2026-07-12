@@ -245,6 +245,9 @@ els.saveBtn.addEventListener("click", async () => {
   const fullBlob = await new Promise((res) => state.fullCanvas.toBlob(res, "image/jpeg", 0.9));
   const r = state.reading;
   await addReading({
+    // schemaVersion lets a future calibration pass know which fields/units a
+    // stored reading used, so old samples can be recomputed deterministically.
+    schemaVersion: 1,
     patientId: state.patientId,
     timestamp: Date.now(),
     controlIsTop: getControlIsTop(),
@@ -253,6 +256,13 @@ els.saveBtn.addEventListener("click", async () => {
     controlHeight: r.control ? r.control.height : null,
     testHeight: r.test ? r.test.height : null,
     ratio: r.ratio,
+    baseline: r.baseline,
+    peakCount: r.peakCount,
+    // exact crop box in fullImage pixel coords, so the ROI can be re-analyzed
+    // from the stored full photo without guessing where the lines were.
+    roiRect: state.roiRect,
+    // concentration is filled in later, once a calibration curve exists.
+    concentration: null,
     roiImage: roiBlob,
     fullImage: fullBlob,
   });
@@ -344,10 +354,11 @@ function escapeHtml(s) {
 
 async function exportCsv() {
   const all = await getAllReadings();
-  const header = ["id", "patientId", "timestamp", "isoDate", "controlArea", "testArea", "controlHeight", "testHeight", "ratio"];
+  const header = ["id", "patientId", "timestamp", "isoDate", "controlArea", "testArea", "controlHeight", "testHeight", "ratio", "baseline", "concentration"];
   const rows = all.map((r) => [
     r.id, r.patientId, r.timestamp, new Date(r.timestamp).toISOString(),
     r.controlArea, r.testArea, r.controlHeight, r.testHeight, r.ratio,
+    r.baseline, r.concentration,
   ]);
   const csv = [header, ...rows].map((row) => row.map(csvEscape).join(",")).join("\n");
   downloadBlob(new Blob([csv], { type: "text/csv" }), "strip-readings.csv");
