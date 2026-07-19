@@ -94,8 +94,18 @@ async function openCamera() {
     state.track = getTrack(state.stream);
     if (torchSupported(state.track)) {
       els.torchBtn.hidden = false;
-      els.torchBtn.textContent = "Flash: Off";
-      state.torchOn = false;
+      // Auto-enable the flash so every capture uses the same light source
+      // (paired with the light-box, this is what standardizes the shot).
+      // The toggle stays available so an operator can turn it off if the
+      // glossy cassette produces glare.
+      try {
+        await setTorch(state.track, true);
+        state.torchOn = true;
+        els.torchBtn.textContent = "Flash: On";
+      } catch {
+        state.torchOn = false;
+        els.torchBtn.textContent = "Flash: Off";
+      }
     }
   } catch (err) {
     els.cameraError.hidden = false;

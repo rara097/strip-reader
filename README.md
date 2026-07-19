@@ -8,6 +8,9 @@ dependencies.
 
 Live app: **https://rara097.github.io/strip-reader/**
 
+For a formal, printable operator procedure (light-box + flash workflow,
+quality checks, data handling), see **[SOP.md](SOP.md)**.
+
 ## Using it on your phone
 
 1. Open the live URL above in Safari (iPhone) or Chrome (Android).
@@ -25,13 +28,16 @@ up app updates.
 
 1. **Patient ID** — enter an identifier for the reading.
 2. **Capture** — a dashed guide box overlays the live camera view. Align
-   the strip's result window inside it and tap Capture. If your device
-   supports it, a flashlight toggle appears (Android Chrome; iOS Safari
-   does not expose torch control to web apps, so keep the room well and
-   consistently lit instead). The guide box position is mapped back
-   through the video's scaling math so the same region is cropped from
-   the full-resolution photo regardless of screen size — this is what
-   keeps captures standardized between readings.
+   the strip's result window inside it and tap Capture. The **flash turns
+   on automatically** when the camera opens, so every shot uses the same
+   light source (a toggle stays available to turn it off if the glossy
+   cassette glares). Where app-controlled torch isn't supported (e.g. iOS
+   Safari), the button won't appear — use a consistent external light such
+   as the light-box instead. Pairing the flash with a light-box that
+   blocks ambient light gives the most standardized capture. The guide box
+   position is mapped back through the video's scaling math so the same
+   region is cropped from the full-resolution photo regardless of screen
+   size — this is what keeps captures standardized between readings.
 3. **Select result window** — drag a tight box around the two lines
    (control + test). Your last selection is remembered as the starting
    point for the next capture.
