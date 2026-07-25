@@ -2,13 +2,35 @@ export async function startCamera(videoEl) {
   const stream = await navigator.mediaDevices.getUserMedia({
     video: {
       facingMode: { ideal: "environment" },
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
+      // Match the portrait guide box's aspect ratio (see .camera-wrap in
+      // style.css). Requesting a 16:9 landscape frame here made object-fit:
+      // cover crop most of the width off to fill the taller box, which read
+      // as the camera being "zoomed in".
+      aspectRatio: { ideal: 3 / 4 },
+      width: { ideal: 1080 },
+      height: { ideal: 1440 },
     },
     audio: false,
   });
   videoEl.srcObject = stream;
   await videoEl.play();
+
+  // Some multi-lens phones default a fresh track to a non-1x zoom (e.g. the
+  // "environment" logical camera picking a 2x crop). Reset to 1x where the
+  // device exposes zoom control, so field of view matches what's on screen.
+  const track = stream.getVideoTracks()[0];
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  if (caps.zoom) {
+    const min = caps.zoom.min ?? 1;
+    const max = caps.zoom.max ?? 1;
+    const target = Math.min(Math.max(1, min), max);
+    try {
+      await track.applyConstraints({ advanced: [{ zoom: target }] });
+    } catch {
+      // capability reported but the device rejected the constraint; not fatal
+    }
+  }
+
   return stream;
 }
 

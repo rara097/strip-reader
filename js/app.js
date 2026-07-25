@@ -92,21 +92,7 @@ async function openCamera() {
   try {
     state.stream = await startCamera(els.video);
     state.track = getTrack(state.stream);
-    if (torchSupported(state.track)) {
-      els.torchBtn.hidden = false;
-      // Auto-enable the flash so every capture uses the same light source
-      // (paired with the light-box, this is what standardizes the shot).
-      // The toggle stays available so an operator can turn it off if the
-      // glossy cassette produces glare.
-      try {
-        await setTorch(state.track, true);
-        state.torchOn = true;
-        els.torchBtn.textContent = "Flash: On";
-      } catch {
-        state.torchOn = false;
-        els.torchBtn.textContent = "Flash: Off";
-      }
-    }
+    await enableTorch();
   } catch (err) {
     els.cameraError.hidden = false;
     els.cameraError.textContent =
@@ -115,14 +101,42 @@ async function openCamera() {
   }
 }
 
+// Auto-enable the flash so every capture uses the same light source (paired
+// with the light-box, this is what standardizes the shot). Capability
+// negotiation can lag a beat on some Android devices right after the track
+// starts, so this retries a few times before giving up rather than checking
+// once. iOS Safari never exposes torch control to web apps at all — in that
+// case torchSupported() stays false and the button remains hidden.
+async function enableTorch() {
+  for (const delay of [0, 250, 600, 1200]) {
+    if (delay) await new Promise((r) => setTimeout(r, delay));
+    if (!state.track || !torchSupported(state.track)) continue;
+    try {
+      await setTorch(state.track, true);
+      state.torchOn = true;
+      els.torchBtn.hidden = false;
+      els.torchBtn.textContent = "Flash: On";
+      return;
+    } catch {
+      // capability reported but the constraint was rejected this attempt; retry
+    }
+  }
+  if (state.track && torchSupported(state.track)) {
+    els.torchBtn.hidden = false;
+    state.torchOn = false;
+    els.torchBtn.textContent = "Flash: Off";
+  }
+}
+
 els.torchBtn.addEventListener("click", async () => {
   if (!state.track) return;
+  const next = !state.torchOn;
   try {
-    state.torchOn = !state.torchOn;
-    await setTorch(state.track, state.torchOn);
+    await setTorch(state.track, next);
+    state.torchOn = next;
     els.torchBtn.textContent = state.torchOn ? "Flash: On" : "Flash: Off";
   } catch {
-    els.torchBtn.hidden = true;
+    // leave the button visible and state unchanged so the operator can retry
   }
 });
 
