@@ -28,16 +28,19 @@ up app updates.
 
 1. **Patient ID** — enter an identifier for the reading.
 2. **Capture** — a dashed guide box overlays the live camera view. Align
-   the strip's result window inside it and tap Capture. The **flash turns
-   on automatically** when the camera opens, so every shot uses the same
-   light source (a toggle stays available to turn it off if the glossy
-   cassette glares). Where app-controlled torch isn't supported (e.g. iOS
-   Safari), the button won't appear — use a consistent external light such
-   as the light-box instead. Pairing the flash with a light-box that
-   blocks ambient light gives the most standardized capture. The guide box
-   position is mapped back through the video's scaling math so the same
-   region is cropped from the full-resolution photo regardless of screen
-   size — this is what keeps captures standardized between readings.
+   the strip's result window inside it and tap Capture. The **standardization
+   light source should be a light-box with its own fixed internal light**
+   (see [SOP.md](SOP.md) §4.1) — not the phone flash. Phone flash/torch
+   control is only a supplementary bonus where the platform allows it (some
+   Android/Chrome devices); the app tries to auto-enable it as extra fill
+   light, but **iOS Safari blocks web apps from controlling the flash
+   entirely** (an Apple platform restriction, not a bug), so on iPhone the
+   button never appears. Don't rely on phone flash for standardization
+   across devices — brightness, position, and color temperature vary by
+   phone model. The guide box position is mapped back through the video's
+   scaling math so the same region is cropped from the full-resolution
+   photo regardless of screen size — this is what keeps captures
+   standardized between readings.
 3. **Select result window** — drag a tight box around the two lines
    (control + test). Your last selection is remembered as the starting
    point for the next capture.

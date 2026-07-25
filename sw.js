@@ -1,4 +1,4 @@
-const CACHE = "strip-reader-v2";
+const CACHE = "strip-reader-v3";
 const SHELL = [
   "./",
   "index.html",

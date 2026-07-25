@@ -35,10 +35,33 @@ handling. Does **not** cover assay preparation or clinical interpretation.
 
 - Designated smartphone with the Strip Reader app installed to the home screen
   (see Section 5.1).
-- **Light-box (black box)** for controlled, ambient-light-free imaging.
-- Phone flash/torch (used as the standard light source — see Section 6).
+- **Light-box** with its own fixed, internal light source (see Section 4.1).
+  This — not the phone flash — is the standardization light source.
 - Prepared, developed test strips ready to read.
 - Marker for labeling strips with the Patient ID.
+
+### 4.1 Why the box needs its own light
+
+Phone flash/torch **cannot** be used as the standardization light source:
+- **iPhone (Safari) cannot control the flash from a web app at all** — this is
+  an Apple platform restriction with no workaround.
+- Even on Android devices where it works, flash position, brightness, and
+  color temperature vary by phone model, which would make readings
+  inconsistent across devices and undermine any future calibration curve.
+- Phones may be swapped or replaced over the life of this program; a fixed
+  box light keeps the standard independent of which phone is in use.
+
+The light-box must therefore have its own **fixed-brightness, USB-powered
+(not battery) LED light**, ideally diffused (e.g. a diffuser panel or a
+white interior the light bounces off) rather than a bare point source aimed
+directly at the strip, to avoid glare/hotspots on the glossy cassette
+window. Use a neutral/daylight-white LED (roughly 5000–6500K), never a
+dimmable or color-changing one. Once installed, this light stays on the
+same fixed setting for the life of the box — do not adjust brightness
+between sessions.
+
+If your box does not yet have this, do not use it for readings intended to
+support a calibration curve until it does.
 
 ## 5. One-time setup
 
@@ -54,10 +77,11 @@ handling. Does **not** cover assay preparation or clinical interpretation.
 ### 5.2 Verify the standardized rig
 - Confirm the light-box is clean and undamaged and blocks outside light when
   closed.
+- Confirm the box's internal light turns on reliably and at a fixed,
+  unadjustable brightness (Section 4.1).
 - Confirm the phone seats in the **same fixed position** every time (same
   distance and angle to the strip). Mark the phone and strip positions if the
   box does not fix them mechanically.
-- Confirm the flash turns on when the camera screen opens (Section 6.2).
 
 ## 6. Standardization requirements (read before every session)
 
@@ -65,40 +89,46 @@ These conditions **must** be the same for every capture. Do not vary them
 between patient samples, and keep them identical when standards are later run
 for calibration.
 
-1. **Light-box:** The strip is imaged **inside the closed light-box** so no
-   ambient/room light reaches it. Never capture in open room light.
-2. **Flash ON:** The phone flash is the single, consistent light source. The app
-   **turns the flash on automatically** when the camera opens; the on-screen
-   button should read **"Flash: On."** Do not turn it off unless glare requires
-   it (see 6.3).
+1. **Light-box:** The strip is imaged **inside the closed light-box, with the
+   box's internal light on**, so no ambient/room light reaches it and
+   illumination is always the same fixed source. Never capture in open room
+   light, and never capture with the box light off.
+2. **Phone flash: leave at its default, do not rely on it.** The on-screen
+   "Phone Flash" button is a supplementary bonus where the platform allows
+   it — it is **not** the standardization light source and does not appear
+   at all on iPhone (Section 6.2). Do not toggle it between samples in the
+   same batch; whatever state it's in when a batch starts, keep it that way
+   for the whole batch.
 3. **Fixed geometry:** Same phone-to-strip distance and angle every time (fixed
    by the box or by marked positions). Approx. 10 cm if not mechanically fixed.
 4. **Alignment:** The strip's result window is centered inside the on-screen
    dashed guide box.
 5. **Same device:** Use the same designated phone for a given study/lot.
 
-### 6.2 Confirming the flash
-When you tap **Start Capture**, the flash should switch on automatically and the
-button should show **"Flash: On."** If the button shows "Flash: Off" or is
-missing, the device/browser does not support app-controlled torch (common on
-iPhone/Safari). In that case use the light-box's own illumination if provided,
-keep it identical for every shot, and record this in the run notes.
+### 6.2 About the "Phone Flash" button
+On supported Android devices, the app will try to turn the phone flash on
+automatically as extra fill light when the camera opens. **On iPhone
+(Safari), this button never appears — this is expected.** Apple's WebKit
+does not allow web apps to control the flash at all; there is no setting or
+fix for this. It does not affect standardization, because the box's
+internal light (Section 4.1) is the actual fixed light source, not the
+phone flash.
 
 ### 6.3 Glare exception
-If the result window shows a bright reflection/hotspot from the flash on the
-glossy cassette, the line can be washed out. Reposition slightly, or tap the
-flash button to **Flash: Off** — but if you do, keep it off for **all** samples
-in that batch and note it. Never mix flash-on and flash-off within a comparison
-set.
+If the result window shows a bright reflection/hotspot on the glossy
+cassette, the line can be washed out. Reposition the strip or adjust the
+diffuser; if the box light source itself is the cause, that's a hardware
+issue with the box (Section 4.1) to fix before continuing, not something to
+work around by toggling the phone flash.
 
 ## 7. Procedure (per sample)
 
 1. **Label** the strip with its Patient ID.
 2. Open the app; on the **New Reading** screen, enter the **Patient ID** exactly
    as labeled. Tap **Start Capture**.
-3. Place the strip in the light-box in the fixed position and **close the box.**
-4. Confirm **Flash: On** and that the strip's result window sits inside the
-   dashed guide box.
+3. Place the strip in the light-box in the fixed position, confirm the box's
+   internal light is on, and **close the box.**
+4. Confirm the strip's result window sits inside the dashed guide box.
 5. Hold steady and tap **Capture.**
 6. On **Select Result Window**, drag a tight box around the two lines (control +
    test). The previous selection is reused as a starting point — adjust only if
@@ -156,8 +186,8 @@ intensity numbers as concentrations until calibration is validated.
 | Symptom | Likely cause | Action |
 |---|---|---|
 | "Could not access camera" | Permission denied | Grant camera permission for the site in browser settings; reopen. |
-| No flash button / "Flash: Off" won't turn on | Browser/device can't control torch (e.g. iOS Safari) | Use the light-box illumination consistently; note in run log. |
-| Glare on result window | Flash reflecting off cassette | Reposition; if needed disable flash for the whole batch (Section 6.3). |
+| No "Phone Flash" button appears | Expected on iPhone (Safari) — WebKit blocks web-app flash control entirely | No action needed; the box's internal light is the actual standardization source (Section 4.1). |
+| Glare on result window | Box light reflecting off cassette | Reposition strip; adjust/add diffuser; fix box light hardware if the hotspot persists (Section 6.3). |
 | Only one peak / test line missing | Faint line, wrong ROI, or true negative | Re-check ROI box is tight; recapture; a genuinely absent test line may be a real result. |
 | Control line missing | Invalid assay or bad capture | Recapture; if still absent, treat as failed test. |
 | App looks outdated after an update | Cached old version | Open the app once while online to let it update. |

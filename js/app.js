@@ -101,12 +101,14 @@ async function openCamera() {
   }
 }
 
-// Auto-enable the flash so every capture uses the same light source (paired
-// with the light-box, this is what standardizes the shot). Capability
-// negotiation can lag a beat on some Android devices right after the track
-// starts, so this retries a few times before giving up rather than checking
-// once. iOS Safari never exposes torch control to web apps at all — in that
-// case torchSupported() stays false and the button remains hidden.
+// The light-box's own fixed light is the real standardization requirement
+// (see SOP.md) — phone flash/torch control is only a supplementary bonus
+// where the platform allows it, and is auto-enabled as a nice-to-have.
+// iOS Safari never exposes torch control to web apps at all, so on iPhone
+// torchSupported() stays false and this button stays hidden; that's expected,
+// not a bug — the box light is what carries standardization there. Capability
+// negotiation can also lag a beat on some Android devices right after the
+// track starts, so this retries a few times before giving up.
 async function enableTorch() {
   for (const delay of [0, 250, 600, 1200]) {
     if (delay) await new Promise((r) => setTimeout(r, delay));
@@ -115,7 +117,7 @@ async function enableTorch() {
       await setTorch(state.track, true);
       state.torchOn = true;
       els.torchBtn.hidden = false;
-      els.torchBtn.textContent = "Flash: On";
+      els.torchBtn.textContent = "Phone Flash: On";
       return;
     } catch {
       // capability reported but the constraint was rejected this attempt; retry
@@ -124,7 +126,7 @@ async function enableTorch() {
   if (state.track && torchSupported(state.track)) {
     els.torchBtn.hidden = false;
     state.torchOn = false;
-    els.torchBtn.textContent = "Flash: Off";
+    els.torchBtn.textContent = "Phone Flash: Off";
   }
 }
 
@@ -134,7 +136,7 @@ els.torchBtn.addEventListener("click", async () => {
   try {
     await setTorch(state.track, next);
     state.torchOn = next;
-    els.torchBtn.textContent = state.torchOn ? "Flash: On" : "Flash: Off";
+    els.torchBtn.textContent = state.torchOn ? "Phone Flash: On" : "Phone Flash: Off";
   } catch {
     // leave the button visible and state unchanged so the operator can retry
   }
