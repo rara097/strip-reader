@@ -82,6 +82,29 @@ support a calibration curve until it does.
 - Confirm the phone seats in the **same fixed position** every time (same
   distance and angle to the strip). Mark the phone and strip positions if the
   box does not fix them mechanically.
+- Confirm the whole strip (including its result window) fits comfortably
+  inside the on-screen dashed guide box without the picture looking like a
+  tight, blown-up close-up. If it doesn't, see Section 5.3 (lens).
+
+### 5.3 Lens selection
+At the short, fixed distance most light-boxes hold the phone, a phone's
+**standard/main camera lens** often can't fit the whole strip in frame — the
+picture looks "zoomed in" even though nothing is being cropped in software,
+because the lens's native field of view is simply too narrow at that
+distance. On phones with a separate **ultra-wide lens** (most iPhones since
+the 11 Pro, and many recent Android phones), the app selects it
+automatically and shows **"Lens: Ultra-Wide"** on the camera screen.
+
+- If the picture still looks too tight, or the "Lens" button doesn't appear
+  (older phones without an ultra-wide lens), physically increase the
+  phone-to-strip distance if the box allows it.
+- Tapping the **Lens** button switches between "Ultra-Wide" and "Standard."
+  Whichever you land on for a given phone/box combination, **keep it fixed
+  for the life of that study** — switching lenses changes the optical
+  distortion and field of view, which is exactly the kind of inconsistency
+  Section 6 exists to prevent. The app remembers your choice automatically
+  between sessions, but confirm it hasn't changed if the app is reinstalled
+  or a different phone is used.
 
 ## 6. Standardization requirements (read before every session)
 
@@ -104,6 +127,9 @@ for calibration.
 4. **Alignment:** The strip's result window is centered inside the on-screen
    dashed guide box.
 5. **Same device:** Use the same designated phone for a given study/lot.
+6. **Same lens:** Whichever lens ("Lens: Ultra-Wide" or "Lens: Standard") is
+   selected for a phone/box combination (Section 5.3), keep it fixed for the
+   whole study. Do not switch lenses between samples in a comparison set.
 
 ### 6.2 About the "Phone Flash" button
 On supported Android devices, the app will try to turn the phone flash on
@@ -187,6 +213,8 @@ intensity numbers as concentrations until calibration is validated.
 |---|---|---|
 | "Could not access camera" | Permission denied | Grant camera permission for the site in browser settings; reopen. |
 | No "Phone Flash" button appears | Expected on iPhone (Safari) — WebKit blocks web-app flash control entirely | No action needed; the box's internal light is the actual standardization source (Section 4.1). |
+| Picture looks zoomed in / strip doesn't fit in the guide box | Standard lens's field of view too narrow at the box's fixed distance | Confirm "Lens: Ultra-Wide" is selected (Section 5.3); tap **Lens** to switch if needed, then keep that choice fixed for the study. |
+| No "Lens" button appears | Phone has no separate ultra-wide camera (older/single-lens phone) | Increase phone-to-strip distance if the box allows it; otherwise this is a hardware limit of that phone. |
 | Glare on result window | Box light reflecting off cassette | Reposition strip; adjust/add diffuser; fix box light hardware if the hotspot persists (Section 6.3). |
 | Only one peak / test line missing | Faint line, wrong ROI, or true negative | Re-check ROI box is tight; recapture; a genuinely absent test line may be a real result. |
 | Control line missing | Invalid assay or bad capture | Recapture; if still absent, treat as failed test. |

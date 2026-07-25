@@ -1,9 +1,10 @@
 import { addReading, getAllReadings, deleteReading } from "./db.js";
-import { startCamera, stopCamera, getTrack, torchSupported, setTorch, captureFrame, guideBoxToVideoRect } from "./camera.js";
+import { startCamera, stopCamera, getTrack, torchSupported, setTorch, captureFrame, guideBoxToVideoRect, listRearCameras } from "./camera.js";
 import { cropCanvas, computeReading, drawProfileChart } from "./analysis.js";
 import { buildZip } from "./zip.js";
 
 const ROI_TEMPLATE_KEY = "strip-reader.roiTemplate";
+const LENS_KEY = "strip-reader.lens";
 
 const els = {
   screens: Object.fromEntries(
@@ -17,6 +18,7 @@ const els = {
   guideBox: document.getElementById("guide-box"),
   cameraError: document.getElementById("camera-error"),
   torchBtn: document.getElementById("btn-torch"),
+  lensBtn: document.getElementById("btn-lens"),
   captureBtn: document.getElementById("btn-capture"),
   cancelCameraBtn: document.getElementById("btn-cancel-camera"),
   roiWrap: document.getElementById("roi-wrap"),
@@ -45,6 +47,12 @@ const state = {
   stream: null,
   track: null,
   torchOn: false,
+  // Defaults to the ultra-wide lens where available, since at the short
+  // fixed distance a light-box holds the phone, the standard lens's native
+  // field of view is often too narrow to fit the whole strip. Persisted so
+  // an operator's choice for their rig stays consistent across sessions —
+  // switching lenses mid-study changes optical distortion characteristics.
+  lens: localStorage.getItem(LENS_KEY) || "ultrawide",
   fullCanvas: null,     // guide-cropped photo, standardized frame
   roiRect: null,         // {x,y,w,h} in fullCanvas pixel coords
   roiCanvas: null,       // cropped result-window canvas
@@ -89,9 +97,11 @@ els.backHomeBtn.addEventListener("click", () => {
 async function openCamera() {
   els.cameraError.hidden = true;
   els.torchBtn.hidden = true;
+  els.lensBtn.hidden = true;
   try {
-    state.stream = await startCamera(els.video);
+    state.stream = await startCamera(els.video, state.lens);
     state.track = getTrack(state.stream);
+    await updateLensButton();
     await enableTorch();
   } catch (err) {
     els.cameraError.hidden = false;
@@ -100,6 +110,30 @@ async function openCamera() {
       ". Check camera permissions for this site.";
   }
 }
+
+// Only show the toggle when the device actually has an ultra-wide lens to
+// switch to — most laptops/desktop webcams and older phones don't.
+async function updateLensButton() {
+  try {
+    const rearCams = await listRearCameras();
+    const hasUltraWide = rearCams.some((d) => /ultra.?wide/i.test(d.label));
+    if (hasUltraWide) {
+      els.lensBtn.hidden = false;
+      els.lensBtn.textContent = state.lens === "ultrawide" ? "Lens: Ultra-Wide" : "Lens: Standard";
+    }
+  } catch {
+    // best-effort UI enhancement; leave the button hidden if this fails
+  }
+}
+
+els.lensBtn.addEventListener("click", async () => {
+  state.lens = state.lens === "ultrawide" ? "wide" : "ultrawide";
+  localStorage.setItem(LENS_KEY, state.lens);
+  stopCamera(state.stream);
+  state.stream = null;
+  state.track = null;
+  await openCamera();
+});
 
 // The light-box's own fixed light is the real standardization requirement
 // (see SOP.md) — phone flash/torch control is only a supplementary bonus
@@ -273,9 +307,13 @@ els.saveBtn.addEventListener("click", async () => {
   await addReading({
     // schemaVersion lets a future calibration pass know which fields/units a
     // stored reading used, so old samples can be recomputed deterministically.
-    schemaVersion: 1,
+    schemaVersion: 2,
     patientId: state.patientId,
     timestamp: Date.now(),
+    // Which physical camera lens captured this — distortion/FOV differ
+    // between lenses, so mixing them within one comparison/calibration set
+    // would be a confound worth knowing about later.
+    lens: state.lens,
     controlIsTop: getControlIsTop(),
     controlArea: r.control ? r.control.area : null,
     testArea: r.test ? r.test.area : null,
@@ -380,9 +418,9 @@ function escapeHtml(s) {
 
 async function exportCsv() {
   const all = await getAllReadings();
-  const header = ["id", "patientId", "timestamp", "isoDate", "controlArea", "testArea", "controlHeight", "testHeight", "ratio", "baseline", "concentration"];
+  const header = ["id", "patientId", "timestamp", "isoDate", "lens", "controlArea", "testArea", "controlHeight", "testHeight", "ratio", "baseline", "concentration"];
   const rows = all.map((r) => [
-    r.id, r.patientId, r.timestamp, new Date(r.timestamp).toISOString(),
+    r.id, r.patientId, r.timestamp, new Date(r.timestamp).toISOString(), r.lens,
     r.controlArea, r.testArea, r.controlHeight, r.testHeight, r.ratio,
     r.baseline, r.concentration,
   ]);

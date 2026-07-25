@@ -37,10 +37,18 @@ up app updates.
    entirely** (an Apple platform restriction, not a bug), so on iPhone the
    button never appears. Don't rely on phone flash for standardization
    across devices — brightness, position, and color temperature vary by
-   phone model. The guide box position is mapped back through the video's
-   scaling math so the same region is cropped from the full-resolution
-   photo regardless of screen size — this is what keeps captures
-   standardized between readings.
+   phone model. Where available, the app also auto-selects the phone's
+   **ultra-wide lens** (shown as "Lens: Ultra-Wide") — at the short, fixed
+   distance a light-box holds the phone, the standard lens's native field
+   of view is often too narrow to fit the whole strip, which otherwise
+   looks like the camera is "zoomed in" even with no software cropping
+   involved; a manual **Lens** toggle is available if a given phone/box
+   combination works better with the standard lens instead (see
+   [SOP.md](SOP.md) §5.3 — whichever lens is chosen should stay fixed for a
+   study, since switching changes optical distortion). The guide box
+   position is mapped back through the video's scaling math so the same
+   region is cropped from the full-resolution photo regardless of screen
+   size — this is what keeps captures standardized between readings.
 3. **Select result window** — drag a tight box around the two lines
    (control + test). Your last selection is remembered as the starting
    point for the next capture.
